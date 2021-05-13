@@ -40,6 +40,11 @@ impl Point2D {
         self.y += delta_y;
     }
 
+    /// Determines the resulting location if the current location was shifted by given deltas.
+    pub fn peek_point(&self, delta_x: i64, delta_y: i64) -> Point2D {
+        return Point2D::new(self.x + delta_x, self.y + delta_y);
+    }
+
     /// Gets the eight surrounding points from the current location. Panics if integer overflow or
     /// underflow would occur.
     pub fn get_surrounding_points(&self) -> Vec<Point2D> {
