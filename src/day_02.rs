@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use super::utils::carto::Point2D;
 
 /// Represents the possible movement directions used to determine keypad presses.
@@ -69,6 +70,25 @@ fn calculate_button_press(cursor_loc: &Point2D) -> String {
     return result.to_string();
 }
 
+/// Calculates the key locations for 2016 Day 2 Part 2.
+fn generate_key_locations_soph() -> HashMap<Point2D, char> {
+    let mut key_locations: HashMap<Point2D, char> = HashMap::new();
+    key_locations.insert(Point2D::new(2, 0), '1');
+    key_locations.insert(Point2D::new(1, 1), '2');
+    key_locations.insert(Point2D::new(2, 1), '3');
+    key_locations.insert(Point2D::new(3, 1), '4');
+    key_locations.insert(Point2D::new(0, 2), '5');
+    key_locations.insert(Point2D::new(1, 2), '6');
+    key_locations.insert(Point2D::new(2, 2), '7');
+    key_locations.insert(Point2D::new(3, 2), '8');
+    key_locations.insert(Point2D::new(4, 2), '9');
+    key_locations.insert(Point2D::new(1, 3), 'A');
+    key_locations.insert(Point2D::new(2, 3), 'B');
+    key_locations.insert(Point2D::new(3, 3), 'C');
+    key_locations.insert(Point2D::new(2, 4), 'D');
+    return key_locations;
+}
+
 #[aoc(day2, part1)]
 fn solve_part_1(input: &Vec<Vec<MoveDir>>) -> String {
     let mut code = String::new();
@@ -88,8 +108,26 @@ fn solve_part_1(input: &Vec<Vec<MoveDir>>) -> String {
 }
 
 #[aoc(day2, part2)]
-fn solve_part_2(_input: &Vec<Vec<MoveDir>>) -> String {
-    unimplemented!();
+fn solve_part_2(input: &Vec<Vec<MoveDir>>) -> String {
+    let mut code = String::new();
+    let key_locations = generate_key_locations_soph();
+    // Starting location key "5" at location (0, 2) in new layout
+    let mut cursor_loc = Point2D::new(0, 2);
+    for single_button in input {
+        for movement in single_button {
+            let unit_vec = movement.get_unit_vector();
+            // Check if next location is on the keypad
+            let peek_loc = cursor_loc.peek_point(unit_vec.0, unit_vec.1);
+            if !key_locations.contains_key(&peek_loc) {
+                continue;
+            }
+            // Movement stayed on keypad, so update cursor location
+            cursor_loc = peek_loc;
+        }
+        // Determine button press for current line of instructions
+        code.push(*key_locations.get(&cursor_loc).unwrap());
+    }
+    return code;
 }
 
 #[cfg(test)]
@@ -98,9 +136,16 @@ mod tests {
     use std::fs::*;
 
     #[test]
-    fn test_d01_p1_proper() {
+    fn test_d02_p1_proper() {
         let input = generate_input(&read_to_string("./input/2016/day2.txt").unwrap());
         let result = solve_part_1(&input);
         assert_eq!("78985", result);
+    }
+
+    #[test]
+    fn test_d02_p2_proper() {
+        let input = generate_input(&read_to_string("./input/2016/day2.txt").unwrap());
+        let result = solve_part_2(&input);
+        assert_eq!("57DD8", result);
     }
 }
