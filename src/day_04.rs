@@ -1,3 +1,4 @@
+use std::char;
 use std::collections::HashMap;
 use itertools::Itertools;
 use regex::Regex;
@@ -30,6 +31,28 @@ impl RoomData {
     #[allow(dead_code)]
     pub fn get_checksum(&self) -> String {
         return self.checksum.to_string();
+    }
+
+    /// Decrypts the room name, using method specified in AOC 2016 Day 4 Part 2.
+    pub fn decrypt_name(&self) -> String {
+        let mut decrypted_name = String::new();
+        for c in self.encrypted_name.chars() {
+            if c == '-' {
+                // Dashes decrypt to spaces
+                decrypted_name.push(' ');
+            } else {
+                // Rotate letter forward number of times equal to sector ID
+                let mut decrypt = c as u32;
+                for _ in 0..self.sector_id {
+                    decrypt += 1;
+                    if decrypt > 'z' as u32 {
+                        decrypt = 'a' as u32;
+                    }
+                }
+                decrypted_name.push(char::from_u32(decrypt).unwrap());
+            }
+        }
+        return decrypted_name;
     }
 
     /// Calculates the checksum of room from its encrypted name.
@@ -114,5 +137,30 @@ fn solve_part_1(input: &Vec<RoomData>) -> u64 {
 
 #[aoc(day4, part2)]
 fn solve_part_2(input: &Vec<RoomData>) -> u64 {
-    unimplemented!();
+    for room in input {
+        if room.decrypt_name() == "northpole object storage" {
+            return room.get_sector_id();
+        }
+    }
+    panic!("D4_P2: exhausted rooms without finding North Pole object storage!");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::*;
+
+    #[test]
+    fn test_d04_p1_proper() {
+        let input = generate_input(&read_to_string("./input/2016/day4.txt").unwrap());
+        let result = solve_part_1(&input);
+        assert_eq!(173787, result);
+    }
+
+    #[test]
+    fn test_d04_p2_proper() {
+        let input = generate_input(&read_to_string("./input/2016/day4.txt").unwrap());
+        let result = solve_part_2(&input);
+        assert_eq!(548, result);
+    }
 }
