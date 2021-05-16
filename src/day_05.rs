@@ -3,7 +3,7 @@ use md5;
 
 #[aoc_generator(day5)]
 fn generate_input(raw_input: &str) -> String {
-    return raw_input.to_string();
+    return raw_input.trim().to_string();
 }
 
 #[aoc(day5, part1)]
