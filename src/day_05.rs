@@ -28,14 +28,14 @@ fn solve_part_1(door_id: &String) -> String {
 }
 
 #[aoc(day5, part2)]
-fn solve_part_2(_door_id: &String) -> String {
+fn solve_part_2(door_id: &String) -> String {
     let mut index = 0;
     let mut password_chars: HashMap<usize, String> = HashMap::new();
     // Keep processing until full eight-character password is found
     while password_chars.len() < 8 {
         // Keep looping until a password character is found
         loop {
-            let hash_target = format!("{}{}", _door_id, index);
+            let hash_target = format!("{}{}", door_id, index);
             index += 1;
             let md5_digest = md5::compute(hash_target.as_bytes());
             let md5_hash = format!("{:x}", md5_digest);
