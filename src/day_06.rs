@@ -56,7 +56,7 @@ fn solve_part_2(input: &Vec<Vec<char>>) -> String {
             }
         }
     }
-    // Determine most frequent character for each position
+    // Determine least frequent character for each position
     let mut decoded_message = String::new();
     for i in 0..8 {
         let bot_char = *position_counts[i].iter().min_by_key(|entry| entry.1).unwrap().0;
