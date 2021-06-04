@@ -4,8 +4,10 @@ fn generate_input(raw_input: &str) -> String {
     return raw_input.chars().filter(|c| !c.is_whitespace()).collect::<String>();
 }
 
-#[aoc(day9, part1)]
-fn solve_part_1(input: &String) -> usize {
+/// Takes input compressed in experimental format (AOC 2016 Day 9) and conduct one pass of
+/// decompression. Note that to get the fully decompressed output, multiple decompression passes
+/// may be required.
+fn decompress_input(input: &String) -> String {
     let mut i = 0;
     let chars = input.chars().collect::<Vec<char>>();
     let mut decompressed = String::new();
@@ -60,12 +62,30 @@ fn solve_part_1(input: &String) -> usize {
             i += 1;
         }
     }
+    return decompressed;
+}
+
+#[aoc(day9, part1)]
+fn solve_part_1(input: &String) -> usize {
+    let decompressed = decompress_input(input);
     return decompressed.len();
 }
 
 #[aoc(day9, part2)]
 fn solve_part_2(input: &String) -> usize {
-    unimplemented!();
+    let mut temp_input = input.to_string();
+    let mut num_passes = 0;
+    loop {
+        // Conduct one decompression pass
+        let temp_output = decompress_input(&temp_input);
+        // Check if the output is the same length as the input
+        if temp_output.len() == temp_input.len() {
+            return temp_output.len();
+        }
+        num_passes += 1;
+        println!("No. passes: {} ||| Output len: {}", num_passes, temp_output.len());
+        temp_input = temp_output;
+    }
 }
 
 #[cfg(test)]
